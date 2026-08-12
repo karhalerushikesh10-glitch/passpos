@@ -99,7 +99,7 @@ export const InventoryTable: React.FC = () => {
             {products.length === 0 ? (
               <tr>
                 <td colSpan={5} className="p-4 text-center text-zinc-500 font-sans">
-                  No catalog items found. Click "Add New Product" to populate your inventory.
+                  No catalog items found. Click &quot;Add New Product&quot; to populate your inventory.
                 </td>
               </tr>
             ) : (
