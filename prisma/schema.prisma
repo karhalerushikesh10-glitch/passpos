@@ -1,0 +1,82 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Merchant {
+  id                String          @id @default(uuid())
+  storeName         String
+  email             String          @unique
+  stellarPublicKey  String
+  sorobanContractId String?
+  currencyPreference String         @default("USD")
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  authenticators    Authenticator[]
+  products          Product[]
+  transactions      Transaction[]
+  receipts          Receipt[]
+}
+
+model Authenticator {
+  id                   String   @id @default(uuid())
+  credentialID         String   @unique
+  credentialPublicKey  Bytes
+  counter              BigInt
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+  merchantId           String
+  merchant             Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  createdAt            DateTime @default(now())
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  priceUsd    Float
+  priceXlm    Float
+  category    String   @default("General")
+  imageEmoji  String   @default("📦")
+  stock       Int      @default(100)
+  barcode     String?
+  merchantId  String
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  txHash      String   @unique
+  amountUsd   Float
+  amountXlm   Float
+  paymentType String   @default("XLM_NATIVE") // XLM_NATIVE, SOROBAN_USDC, PASSKEY_WEBAUTHN
+  status      String   @default("CONFIRMED")  // PENDING, CONFIRMED, FAILED
+  customerRef String?
+  itemsJson   String   // JSON stringified cart items
+  receiptId   String?  @unique
+  merchantId  String
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+model Receipt {
+  id             String   @id @default(uuid())
+  receiptNumber  String   @unique
+  totalUsd       Float
+  totalXlm       Float
+  taxAmount      Float    @default(0)
+  discountAmount Float    @default(0)
+  txHash         String
+  itemsJson      String
+  merchantId     String
+  merchant       Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+}
