@@ -1,20 +1,15 @@
 import {
   Horizon,
   Keypair,
-  Networks,
   Operation,
   TransactionBuilder,
   Asset,
 } from '@stellar/stellar-sdk';
+import { STELLAR_CONFIG, getContractExplorerUrl, getTransactionExplorerUrl } from '@/config/stellar';
 
-export const STELLAR_TESTNET_HORIZON =
-  process.env.NEXT_PUBLIC_STELLAR_HORIZON_URL || 'https://horizon-testnet.stellar.org';
-export const STELLAR_TESTNET_PASSPHRASE = Networks.TESTNET;
-export const FRIENDBOT_URL = 'https://friendbot.stellar.org';
-export const SOROBAN_CONTRACT_ID =
-  process.env.NEXT_PUBLIC_SOROBAN_CONTRACT_ID || 'CA3B7TZCS7MICD5OWQRE3Q265HPURBYU2YFEWJV2KCBCIW4NO36LV5U6';
+export { getContractExplorerUrl, getTransactionExplorerUrl };
 
-const server = new Horizon.Server(STELLAR_TESTNET_HORIZON);
+const server = new Horizon.Server(STELLAR_CONFIG.HORIZON_URL);
 
 export interface StellarAccountInfo {
   publicKey: string;
@@ -24,20 +19,6 @@ export interface StellarAccountInfo {
     assetCode?: string;
     assetIssuer?: string;
   }[];
-}
-
-/**
- * Returns direct URL to Stellar Expert Testnet Explorer for a transaction hash
- */
-export function getTransactionExplorerUrl(txHash: string): string {
-  return `https://stellar.expert/explorer/testnet/tx/${txHash}`;
-}
-
-/**
- * Returns direct URL to Stellar Expert Testnet Explorer for a contract ID
- */
-export function getContractExplorerUrl(contractId: string = SOROBAN_CONTRACT_ID): string {
-  return `https://stellar.expert/explorer/testnet/contract/${contractId}`;
 }
 
 /**
@@ -56,7 +37,7 @@ export function createStellarKeypair() {
  */
 export async function fundWithFriendbot(publicKey: string): Promise<{ success: boolean; message: string }> {
   try {
-    const response = await fetch(`${FRIENDBOT_URL}?addr=${encodeURIComponent(publicKey)}`);
+    const response = await fetch(`${STELLAR_CONFIG.FRIENDBOT_URL}?addr=${encodeURIComponent(publicKey)}`);
     if (response.ok) {
       return { success: true, message: 'Account successfully funded with 10,000 Testnet XLM!' };
     }
@@ -114,7 +95,7 @@ export async function submitXlmPayment({
 
     const transaction = new TransactionBuilder(sourceAccount, {
       fee: '100',
-      networkPassphrase: STELLAR_TESTNET_PASSPHRASE,
+      networkPassphrase: STELLAR_CONFIG.PASSPHRASE,
     })
       .addOperation(
         Operation.payment({

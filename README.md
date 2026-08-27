@@ -29,24 +29,24 @@
 ### Desktop Experience
 
 **Landing & Cinematic Hero**
-![Landing Page](./docs/screenshots/01_desktop_main_landing.png)
+![Landing Page](docs/screenshots/01_desktop_main_landing.png)
 
 **POS Cashier Terminal**
-![POS Terminal](./docs/screenshots/02_desktop_pos_terminal.png)
+![POS Terminal](docs/screenshots/02_desktop_pos_terminal.png)
 
 **Passkey Biometric Payment Modal**
-![Passkey Modal](./docs/screenshots/03_wallet_connection_modal.png)
+![Passkey Modal](docs/screenshots/03_wallet_connection_modal.png)
 
 **User Feedback & Testing Modal**
-![Feedback Modal](./docs/screenshots/04_user_feedback_modal.png)
+![Feedback Modal](docs/screenshots/04_user_feedback_modal.png)
 
 **Merchant Analytics & Observability Dashboard**
-![Analytics Setup](./docs/screenshots/05_analytics_setup.png)
+![Analytics Setup](docs/screenshots/05_analytics_setup.png)
 
 ### Mobile Responsive Experience
 
 **Mobile Responsive Design (iPhone 13 Pro)**
-![Mobile Responsive Design](./docs/screenshots/06_mobile_responsive_design.png)
+![Mobile Responsive Design](docs/screenshots/06_mobile_responsive_design.png)
 
 ---
 

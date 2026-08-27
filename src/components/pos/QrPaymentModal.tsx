@@ -137,6 +137,8 @@ export const QrPaymentModal: React.FC = () => {
               <h4 className="text-lg font-bold text-white">QR Payment Received!</h4>
             </div>
 
+
+
             <div className="max-h-[280px] overflow-y-auto rounded-xl border border-zinc-800">
               <ReceiptView
                 receipt={{
@@ -169,7 +171,10 @@ export const QrPaymentModal: React.FC = () => {
             {/* QR Code Container */}
             <div className="bg-zinc-950 p-4 rounded-2xl border border-zinc-800 shadow-inner flex flex-col items-center">
               {qrDataUrl ? (
-                <img src={qrDataUrl} alt="Stellar Payment QR Code" className="w-56 h-56 rounded-lg" />
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={qrDataUrl} alt="Stellar Payment QR Code" className="w-56 h-56 rounded-lg" />
+                </>
               ) : (
                 <div className="w-56 h-56 flex items-center justify-center">
                   <RefreshCw className="w-6 h-6 text-teal-400 animate-spin" />

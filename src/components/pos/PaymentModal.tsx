@@ -14,9 +14,12 @@ import {
   Receipt,
   Loader2,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Wallet
 } from 'lucide-react';
 import { ReceiptView } from '@/components/ui/ReceiptView';
+import { useWalletStore } from '@/store/useWalletStore';
+import { executeSorobanPayment } from '@/lib/freighter';
 
 export const PaymentModal: React.FC = () => {
   const {
@@ -32,6 +35,7 @@ export const PaymentModal: React.FC = () => {
     addTransaction,
   } = usePosStore();
 
+  const wallet = useWalletStore();
   const [step, setStep] = useState<'IDLE' | 'SIGNING' | 'SUCCESS'>('IDLE');
   const [txDetails, setTxDetails] = useState<any | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -43,7 +47,78 @@ export const PaymentModal: React.FC = () => {
   const taxAmount = getTaxAmountUsd();
   const discountAmount = getDiscountAmountUsd();
 
+  const handleAuthorizeFreighter = async () => {
+    if (step !== 'IDLE') return;
+    if (!wallet.isConnected || !wallet.publicKey) {
+      setErrorMsg('Please connect Freighter Wallet first.');
+      return;
+    }
+    setStep('SIGNING');
+    setErrorMsg(null);
+    try {
+      const txRef = `ORD-${Date.now()}`;
+      const result = await executeSorobanPayment(
+        wallet.publicKey,
+        merchant.stellarPublicKey,
+        totalXlm,
+        txRef
+      );
+
+      if (!result.success) {
+        setErrorMsg(result.error || 'Freighter transaction failed');
+        setStep('IDLE');
+        return;
+      }
+
+      const res = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amountUsd: totalUsd,
+          amountXlm: totalXlm,
+          taxAmount,
+          discountAmount,
+          paymentType: 'FREIGHTER_SOROBAN',
+          items: cart,
+          merchantId: merchant.id,
+          customerRef: wallet.publicKey,
+          txHash: result.txHash,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setTxDetails({ ...data, transaction: { ...data.transaction, txHash: result.txHash } });
+        setStep('SUCCESS');
+        addTransaction({
+          id: data.transaction.id,
+          txHash: result.txHash || data.transaction.txHash,
+          amountUsd: totalUsd,
+          amountXlm: totalXlm,
+          paymentType: 'FREIGHTER_SOROBAN',
+          status: 'CONFIRMED',
+          customerRef: wallet.publicKey,
+          items: cart,
+          createdAt: new Date().toISOString(),
+        });
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#3b82f6', '#14b8a6', '#10b981', '#8b5cf6'],
+        });
+      } else {
+        setErrorMsg(data.error || 'Backend recording failed');
+        setStep('IDLE');
+      }
+    } catch (e: any) {
+      setErrorMsg(e.message || 'Unexpected payment error occurred');
+      setStep('IDLE');
+    }
+  };
+
   const handleAuthorizePasskey = async () => {
+    if (step !== 'IDLE') return;
     setStep('SIGNING');
     setErrorMsg(null);
 
@@ -176,13 +251,23 @@ export const PaymentModal: React.FC = () => {
             )}
 
             {/* Passkey Biometric Button */}
-            <button
-              onClick={handleAuthorizePasskey}
-              className="w-full bg-gradient-to-r from-blue-600 via-teal-500 to-emerald-500 hover:opacity-95 text-white font-bold rounded-2xl py-4 px-6 flex items-center justify-center space-x-3 shadow-glow transition-all active:scale-[0.99]"
-            >
-              <Fingerprint className="w-6 h-6 text-white animate-pulse" />
-              <span className="text-base">Authorize with Touch ID / Passkey</span>
-            </button>
+            <div className="space-y-3">
+              <button
+                onClick={handleAuthorizePasskey}
+                className="w-full bg-gradient-to-r from-blue-600 via-teal-500 to-emerald-500 hover:opacity-95 text-white font-bold rounded-2xl py-4 px-6 flex items-center justify-center space-x-3 shadow-glow transition-all active:scale-[0.99]"
+              >
+                <Fingerprint className="w-6 h-6 text-white animate-pulse" />
+                <span className="text-base">Authorize with Touch ID / Passkey</span>
+              </button>
+              
+              <button
+                onClick={handleAuthorizeFreighter}
+                className="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-2xl py-4 px-6 flex items-center justify-center space-x-3 border border-zinc-700 transition-all active:scale-[0.99]"
+              >
+                <Wallet className="w-6 h-6 text-blue-400" />
+                <span className="text-base">Pay via Freighter Wallet</span>
+              </button>
+            </div>
           </div>
         )}
 

@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: 'Production-Ready Point of Sale Terminal leveraging WebAuthn Passkeys and Stellar Soroban Smart Contracts.',
 };
 
+import { WalletProvider } from '@/components/providers/WalletProvider';
+
 export default function RootLayout({
   children,
 }: {
@@ -17,11 +19,13 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white">
-        <ToastProvider>
-          <Navbar />
-          <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
-          <FeedbackModal />
-        </ToastProvider>
+        <WalletProvider>
+          <ToastProvider>
+            <Navbar />
+            <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
+            <FeedbackModal />
+          </ToastProvider>
+        </WalletProvider>
       </body>
     </html>
   );

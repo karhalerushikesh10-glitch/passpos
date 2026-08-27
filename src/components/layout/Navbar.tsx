@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { usePosStore } from '@/store/usePosStore';
+import { useWalletStore } from '@/store/useWalletStore';
 import { useToast } from '@/components/ui/ToastProvider';
 import {
   ShieldCheck,
@@ -23,6 +24,7 @@ import {
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
   const { merchant, currency, toggleCurrency, updateMerchantBalance, setFeedbackModalOpen } = usePosStore();
+  const wallet = useWalletStore();
   const { showSuccess, showError } = useToast();
   const [funding, setFunding] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -135,16 +137,31 @@ export const Navbar: React.FC = () => {
               <span>{currency}</span>
             </button>
 
-            {/* Stellar Balance & Friendbot */}
+            {/* Stellar Balance / Connect Wallet */}
             <div className="hidden sm:flex items-center space-x-2 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-800 text-xs">
               <Wallet className="w-3.5 h-3.5 text-blue-400" />
-              <span className="font-mono text-zinc-200">
-                {merchant.balanceXlm.toLocaleString(undefined, { maximumFractionDigits: 1 })} XLM
-              </span>
+              {wallet.isConnected && wallet.publicKey ? (
+                <>
+                  <span className="font-mono text-zinc-200" title={wallet.publicKey}>
+                    {wallet.publicKey.substring(0, 4)}...{wallet.publicKey.slice(-4)}
+                  </span>
+                  <span className="text-zinc-500">|</span>
+                  <span className="font-mono text-zinc-200">
+                    {merchant.balanceXlm.toLocaleString(undefined, { maximumFractionDigits: 1 })} XLM
+                  </span>
+                </>
+              ) : (
+                <button
+                  onClick={() => wallet.connect()}
+                  className="font-medium text-blue-400 hover:text-blue-300"
+                >
+                  {wallet.isConnecting ? 'Connecting...' : 'Connect Freighter'}
+                </button>
+              )}
               <button
                 onClick={handleFundAccount}
                 disabled={funding}
-                className="p-1 hover:bg-zinc-800 rounded text-teal-400 hover:text-teal-300 transition-colors"
+                className="p-1 hover:bg-zinc-800 rounded text-teal-400 hover:text-teal-300 transition-colors ml-1"
                 title="Auto-fund 10,000 Testnet XLM"
               >
                 <RefreshCw className={`w-3 h-3 ${funding ? 'animate-spin' : ''}`} />

@@ -90,9 +90,9 @@ interface PosStore {
   addTransaction: (tx: TransactionRecord) => void;
 }
 
-const DEFAULT_CONTRACT_ID =
-  process.env.NEXT_PUBLIC_SOROBAN_CONTRACT_ID ||
-  'CA3B7TZCS7MICD5OWQRE3Q265HPURBYU2YFEWJV2KCBCIW4NO36LV5U6';
+import { STELLAR_CONFIG } from '@/config/stellar';
+
+const DEFAULT_CONTRACT_ID = STELLAR_CONFIG.CONTRACT_ID;
 
 export const usePosStore = create<PosStore>((set, get) => ({
   merchant: {
