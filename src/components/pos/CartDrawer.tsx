@@ -11,8 +11,8 @@ import {
   ShieldCheck,
   ShoppingBag,
   Percent,
-  Sparkles,
-  ArrowRight
+  ArrowRight,
+  X
 } from 'lucide-react';
 
 export const CartDrawer: React.FC = () => {
@@ -33,6 +33,8 @@ export const CartDrawer: React.FC = () => {
     setPaymentModalOpen,
     setQrModalOpen,
     setNumpadModalOpen,
+    mobileCartOpen,
+    setMobileCartOpen,
   } = usePosStore();
 
   const subtotal = getSubtotalUsd();
@@ -42,7 +44,13 @@ export const CartDrawer: React.FC = () => {
   const totalXlm = getTotalXlm();
 
   return (
-    <div className="w-full lg:w-[420px] bg-zinc-900 border-l border-zinc-800 flex flex-col h-full shadow-2xl">
+    <aside
+      className={`
+        fixed inset-y-0 right-0 z-40 w-full sm:w-[420px] bg-zinc-900 border-l border-zinc-800 flex flex-col h-full shadow-2xl transition-transform duration-300 ease-in-out
+        lg:static lg:translate-x-0 lg:z-auto
+        ${mobileCartOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
+      `}
+    >
       {/* Drawer Header */}
       <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
         <div className="flex items-center space-x-2">
@@ -53,7 +61,7 @@ export const CartDrawer: React.FC = () => {
           </span>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1.5">
           {/* Custom Numpad Button */}
           <button
             onClick={() => setNumpadModalOpen(true)}
@@ -73,6 +81,14 @@ export const CartDrawer: React.FC = () => {
               <Trash2 className="w-4 h-4" />
             </button>
           )}
+
+          {/* Mobile Close Button */}
+          <button
+            onClick={() => setMobileCartOpen(false)}
+            className="lg:hidden p-2 rounded-xl bg-zinc-800 text-zinc-400 hover:text-white"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
@@ -232,6 +248,6 @@ export const CartDrawer: React.FC = () => {
           </button>
         </div>
       </div>
-    </div>
+    </aside>
   );
 };

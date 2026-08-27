@@ -23,7 +23,7 @@ export interface MerchantState {
   storeName: string;
   email: string;
   stellarPublicKey: string;
-  sorobanContractId?: string;
+  sorobanContractId: string;
   currencyPreference: string;
   balanceXlm: number;
   passkeyRegistered: boolean;
@@ -75,9 +75,13 @@ interface PosStore {
   paymentModalOpen: boolean;
   qrModalOpen: boolean;
   numpadModalOpen: boolean;
+  mobileCartOpen: boolean;
+  feedbackModalOpen: boolean;
   setPaymentModalOpen: (open: boolean) => void;
   setQrModalOpen: (open: boolean) => void;
   setNumpadModalOpen: (open: boolean) => void;
+  setMobileCartOpen: (open: boolean) => void;
+  setFeedbackModalOpen: (open: boolean) => void;
 
   // Receipts & History
   activeReceipt: any | null;
@@ -86,13 +90,17 @@ interface PosStore {
   addTransaction: (tx: TransactionRecord) => void;
 }
 
+const DEFAULT_CONTRACT_ID =
+  process.env.NEXT_PUBLIC_SOROBAN_CONTRACT_ID ||
+  'CA3B7TZCS7MICD5OWQRE3Q265HPURBYU2YFEWJV2KCBCIW4NO36LV5U6';
+
 export const usePosStore = create<PosStore>((set, get) => ({
   merchant: {
     id: 'demo-merchant-id',
     storeName: 'Stellar Artisanal Coffee & Bakery',
-    email: 'merchant@passpos.stellar',
+    email: 'cashier@passpos.stellar',
     stellarPublicKey: 'GBV2Z6D564T5E2W7Z6Z6Z6Z6Z6Z6Z6Z6Z6Z6Z6Z6Z6Z6Z6Z6Z6Z6Z6Z6',
-    sorobanContractId: 'CA3B7TZCS7MICD5OWQRE3Q265HPURBYU2YFEWJV2KCBCIW4NO36LV5U6',
+    sorobanContractId: DEFAULT_CONTRACT_ID,
     currencyPreference: 'USD',
     balanceXlm: 10000.0,
     passkeyRegistered: true,
@@ -180,9 +188,13 @@ export const usePosStore = create<PosStore>((set, get) => ({
   paymentModalOpen: false,
   qrModalOpen: false,
   numpadModalOpen: false,
+  mobileCartOpen: false,
+  feedbackModalOpen: false,
   setPaymentModalOpen: (open) => set({ paymentModalOpen: open }),
   setQrModalOpen: (open) => set({ qrModalOpen: open }),
   setNumpadModalOpen: (open) => set({ numpadModalOpen: open }),
+  setMobileCartOpen: (open) => set({ mobileCartOpen: open }),
+  setFeedbackModalOpen: (open) => set({ feedbackModalOpen: open }),
 
   activeReceipt: null,
   setActiveReceipt: (receipt) => set({ activeReceipt: receipt }),
