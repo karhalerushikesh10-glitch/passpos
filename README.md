@@ -26,25 +26,22 @@
 
 ## 📸 Genuine UI Application Screenshots
 
-All screenshots below are captured directly from the live application across desktop and mobile viewports:
+All screenshots below are captured directly from the live application via automated testing (`scripts/capture-screenshots.js`):
 
-### Desktop Experience
-| Landing & Cinematic Hero | POS Cashier Terminal |
-| :---: | :---: |
-| ![Landing Page](screenshots/01_landing_hero_desktop.png) | ![POS Terminal](screenshots/02_pos_terminal_desktop.png) |
+### 1. Desktop Main Product UI (1920x1080)
+![Desktop Main Landing](docs/screenshots/01_desktop_main_landing.png)
 
-| Passkey Biometric Payment Modal | Merchant Analytics Dashboard |
-| :---: | :---: |
-| ![Passkey Payment](screenshots/03_passkey_modal_desktop.png) | ![Merchant Dashboard](screenshots/05_merchant_dashboard_desktop.png) |
+### 2. Mobile Responsive UI (iPhone 13 Pro)
+![Mobile Responsive Design](docs/screenshots/02_mobile_responsive_design.png)
 
-| User Feedback & Testing Modal | Merchant Passkey Onboarding |
-| :---: | :---: |
-| ![Feedback Modal](screenshots/04_feedback_modal_desktop.png) | ![Passkey Onboarding](screenshots/06_onboarding_passkey_desktop.png) |
+### 3. Wallet Interaction State (Stellar / Freighter / Passkey Selection)
+![Wallet Connection Modal](docs/screenshots/03_wallet_connection_modal.png)
 
-### Mobile Responsive Experience
-| Mobile Landing | Mobile POS Terminal | Mobile Dashboard |
-| :---: | :---: | :---: |
-| ![Mobile Landing](screenshots/07_landing_mobile.png) | ![Mobile POS](screenshots/08_pos_terminal_mobile.png) | ![Mobile Dashboard](screenshots/09_dashboard_mobile.png) |
+### 4. User Feedback Collection UI
+![User Feedback Modal](docs/screenshots/04_user_feedback_modal.png)
+
+### 5. Analytics & Monitoring Setup
+![Analytics & Monitoring Setup](docs/screenshots/05_analytics_setup.png)
 
 ---
 
