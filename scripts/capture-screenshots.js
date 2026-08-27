@@ -14,27 +14,25 @@ const ROOT_SCREENSHOTS_DIR = path.join(__dirname, '..', 'screenshots');
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function runCapture() {
-  console.log(`[Screenshot Suite] Starting Playwright/Puppeteer capture targeting isolated server: ${APP_URL}`);
+  console.log(`[Screenshot Suite] Capturing clean screenshots from: ${APP_URL}`);
 
   let browser;
   let page;
 
-  // Try Playwright first, fallback to Puppeteer
   try {
     const { chromium } = require('playwright');
     browser = await chromium.launch({ headless: true });
     const context = await browser.newContext();
     page = await context.newPage();
-    console.log('✔ Initialized Playwright Chromium instance.');
+    console.log('✔ Playwright initialized.');
   } catch (err) {
-    console.log('Playwright chromium binary not pre-installed, using Puppeteer Chrome instance...');
     const puppeteer = require('puppeteer');
     browser = await puppeteer.launch({
       headless: 'new',
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu'],
     });
     page = await browser.newPage();
-    console.log('✔ Initialized Puppeteer Chrome instance.');
+    console.log('✔ Puppeteer initialized.');
   }
 
   async function saveScreenshot(filename) {
@@ -42,99 +40,75 @@ async function runCapture() {
     const rootPath = path.join(ROOT_SCREENSHOTS_DIR, filename);
     await page.screenshot({ path: docsPath });
     await page.screenshot({ path: rootPath });
-    console.log(`✔ [Captured]: ${filename}`);
+    console.log(`✔ Saved: ${filename}`);
   }
 
-  // =========================================================================
-  // 1. Desktop Main Product UI (1920x1080)
-  // =========================================================================
-  console.log('\n--- Step 1: Capturing Desktop Main Landing Page (1920x1080) ---');
+  // 1. Desktop Landing Page (1920x1080)
   await page.setViewportSize ? await page.setViewportSize({ width: 1920, height: 1080 }) : await page.setViewport({ width: 1920, height: 1080, deviceScaleFactor: 2 });
   await page.goto(`${APP_URL}`, { waitUntil: 'networkidle' });
   await sleep(1500);
   await saveScreenshot('01_desktop_main_landing.png');
 
-  // =========================================================================
-  // 2. Mobile Responsive UI (iPhone 13 Pro: 390x844)
-  // =========================================================================
-  console.log('\n--- Step 2: Capturing Mobile Responsive Design (iPhone 13 Pro: 390x844) ---');
+  // 2. Desktop POS Terminal
+  await page.goto(`${APP_URL}/pos`, { waitUntil: 'networkidle' });
+  await sleep(1200);
+  // Add an item to cart
+  try {
+    const addBtn = await page.$('button:has-text("Add"), button:has-text("+"), button.bg-blue-600');
+    if (addBtn) {
+      await addBtn.click();
+      await sleep(300);
+    }
+  } catch (e) {}
+  await saveScreenshot('02_desktop_pos_terminal.png');
+
+  // 3. Wallet Connection Modal State
+  await page.goto(`${APP_URL}`, { waitUntil: 'networkidle' });
+  await sleep(1000);
+  try {
+    const walletBtn = await page.$('#connect-wallet-btn, button:has-text("Connect Wallet")');
+    if (walletBtn) {
+      await walletBtn.click();
+      await sleep(800);
+    }
+  } catch (e) {}
+  await saveScreenshot('03_wallet_connection_modal.png');
+
+  // 4. User Feedback Modal
+  await page.goto(`${APP_URL}/pos`, { waitUntil: 'networkidle' });
+  await sleep(1000);
+  try {
+    const feedbackBtn = await page.$('#navbar-feedback-btn, button:has-text("Feedback")');
+    if (feedbackBtn) {
+      await feedbackBtn.click();
+      await sleep(800);
+    }
+  } catch (e) {}
+  await saveScreenshot('04_user_feedback_modal.png');
+
+  // 5. Merchant Dashboard & Analytics
+  await page.goto(`${APP_URL}/dashboard`, { waitUntil: 'networkidle' });
+  await sleep(1200);
+  await saveScreenshot('05_analytics_setup.png');
+
+  // 6. Mobile Responsive Design (iPhone 13 Pro: 390x844)
   await page.setViewportSize ? await page.setViewportSize({ width: 390, height: 844 }) : await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
   await page.goto(`${APP_URL}`, { waitUntil: 'networkidle' });
   await sleep(1200);
-
-  // Click mobile hamburger menu toggle
   try {
-    const mobileBtn = await page.$('#navbar-mobile-menu-btn, button[aria-label*="navigation"], button:has(svg.lucide-menu)');
+    const mobileBtn = await page.$('#navbar-mobile-menu-btn, button[aria-label*="navigation"]');
     if (mobileBtn) {
       await mobileBtn.click();
       await sleep(600);
     }
   } catch (e) {}
-  await saveScreenshot('02_mobile_responsive_design.png');
-
-  // Reset viewport to Desktop 1920x1080
-  await page.setViewportSize ? await page.setViewportSize({ width: 1920, height: 1080 }) : await page.setViewport({ width: 1920, height: 1080, isMobile: false, hasTouch: false, deviceScaleFactor: 2 });
-
-  // =========================================================================
-  // 3. Wallet Interaction State (Click #connect-wallet-btn -> #wallet-modal)
-  // =========================================================================
-  console.log('\n--- Step 3: Capturing Wallet Connection Modal State ---');
-  await page.goto(`${APP_URL}`, { waitUntil: 'networkidle' });
-  await sleep(1000);
-
-  try {
-    await page.waitForSelector('#connect-wallet-btn', { timeout: 5000 });
-    await page.click('#connect-wallet-btn');
-    await sleep(800);
-    await page.waitForSelector('#wallet-modal', { timeout: 5000 });
-  } catch (e) {
-    console.warn('Selector fallback: triggering via evaluate');
-    await page.evaluate(() => {
-      const btn = document.getElementById('connect-wallet-btn') || Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Connect Wallet'));
-      if (btn) btn.click();
-    });
-    await sleep(800);
-  }
-  await saveScreenshot('03_wallet_connection_modal.png');
-
-  // =========================================================================
-  // 4. User Feedback Collection UI (Navigate /pos -> Click #navbar-feedback-btn -> #feedback-modal)
-  // =========================================================================
-  console.log('\n--- Step 4: Capturing User Feedback Collection Modal ---');
-  await page.goto(`${APP_URL}/pos`, { waitUntil: 'networkidle' });
-  await sleep(1000);
-
-  try {
-    await page.waitForSelector('#navbar-feedback-btn', { timeout: 5000 });
-    await page.click('#navbar-feedback-btn');
-    await sleep(800);
-    await page.waitForSelector('#feedback-modal', { timeout: 5000 });
-  } catch (e) {
-    console.warn('Selector fallback: triggering feedback modal via evaluate');
-    await page.evaluate(() => {
-      const btn = document.getElementById('navbar-feedback-btn') || Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Feedback'));
-      if (btn) btn.click();
-    });
-    await sleep(800);
-  }
-  await saveScreenshot('04_user_feedback_modal.png');
-
-  // =========================================================================
-  // 5. Analytics & Monitoring Setup (Navigate /dashboard -> #merchant-dashboard)
-  // =========================================================================
-  console.log('\n--- Step 5: Capturing Analytics & Monitoring Setup ---');
-  await page.goto(`${APP_URL}/dashboard`, { waitUntil: 'networkidle' });
-  await sleep(1200);
-  try {
-    await page.waitForSelector('#merchant-dashboard', { timeout: 5000 });
-  } catch (e) {}
-  await saveScreenshot('05_analytics_setup.png');
+  await saveScreenshot('06_mobile_responsive_design.png');
 
   await browser.close();
-  console.log('\n🎉 [Success] All 5 distinct, verified screenshots generated for PassPOS!');
+  console.log('🎉 All screenshot files generated successfully!');
 }
 
 runCapture().catch((err) => {
-  console.error('[Error during screenshot capture]:', err);
+  console.error(err);
   process.exit(1);
 });
