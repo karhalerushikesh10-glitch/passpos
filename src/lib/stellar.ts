@@ -7,9 +7,12 @@ import {
   Asset,
 } from '@stellar/stellar-sdk';
 
-export const STELLAR_TESTNET_HORIZON = 'https://horizon-testnet.stellar.org';
+export const STELLAR_TESTNET_HORIZON =
+  process.env.NEXT_PUBLIC_STELLAR_HORIZON_URL || 'https://horizon-testnet.stellar.org';
 export const STELLAR_TESTNET_PASSPHRASE = Networks.TESTNET;
 export const FRIENDBOT_URL = 'https://friendbot.stellar.org';
+export const SOROBAN_CONTRACT_ID =
+  process.env.NEXT_PUBLIC_SOROBAN_CONTRACT_ID || 'CA3B7TZCS7MICD5OWQRE3Q265HPURBYU2YFEWJV2KCBCIW4NO36LV5U6';
 
 const server = new Horizon.Server(STELLAR_TESTNET_HORIZON);
 
@@ -21,6 +24,20 @@ export interface StellarAccountInfo {
     assetCode?: string;
     assetIssuer?: string;
   }[];
+}
+
+/**
+ * Returns direct URL to Stellar Expert Testnet Explorer for a transaction hash
+ */
+export function getTransactionExplorerUrl(txHash: string): string {
+  return `https://stellar.expert/explorer/testnet/tx/${txHash}`;
+}
+
+/**
+ * Returns direct URL to Stellar Expert Testnet Explorer for a contract ID
+ */
+export function getContractExplorerUrl(contractId: string = SOROBAN_CONTRACT_ID): string {
+  return `https://stellar.expert/explorer/testnet/contract/${contractId}`;
 }
 
 /**
