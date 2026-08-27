@@ -262,6 +262,7 @@ export default function Home() {
             </Link>
 
             <button
+              id="connect-wallet-btn"
               onClick={() => setWalletModalOpen(true)}
               className="rounded-full font-medium liquid-glass px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base text-white hover:text-white transition-colors animate-blur-fade-up"
               style={{ animationDelay: '700ms' }}
@@ -274,7 +275,7 @@ export default function Home() {
 
       {/* WALLET CONNECTION MODAL */}
       {walletModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div id="wallet-modal" className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl w-full max-w-md p-6 space-y-6 shadow-2xl relative">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
               <div className="flex items-center space-x-2">

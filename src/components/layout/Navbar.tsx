@@ -116,6 +116,7 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center space-x-2 sm:space-x-3">
             {/* Feedback Button */}
             <button
+              id="navbar-feedback-btn"
               onClick={() => setFeedbackModalOpen(true)}
               className="flex items-center space-x-1.5 bg-zinc-900 hover:bg-zinc-800 text-amber-300 hover:text-amber-200 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold border border-amber-500/30 transition-all hover:border-amber-500/50 shadow-sm"
               title="Give Level 4 User Feedback"
@@ -158,6 +159,7 @@ export const Navbar: React.FC = () => {
 
             {/* Mobile Hamburger Toggle */}
             <button
+              id="navbar-mobile-menu-btn"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white"
               aria-label="Toggle Menu"

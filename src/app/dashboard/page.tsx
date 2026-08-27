@@ -7,7 +7,7 @@ import { TransactionHistory } from '@/components/dashboard/TransactionHistory';
 
 export default function DashboardPage() {
   return (
-    <div className="flex-1 bg-zinc-950 p-4 md:p-8 max-w-7xl mx-auto w-full space-y-6 overflow-y-auto">
+    <div id="merchant-dashboard" className="flex-1 bg-zinc-950 p-4 md:p-8 max-w-7xl mx-auto w-full space-y-6 overflow-y-auto">
       <div>
         <h2 className="text-2xl font-bold text-white tracking-tight">Merchant Dashboard</h2>
         <p className="text-xs text-zinc-400">Overview of sales analytics, inventory management, and Stellar ledger activity.</p>
