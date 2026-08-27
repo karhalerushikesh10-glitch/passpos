@@ -15,8 +15,8 @@
 > [!IMPORTANT]
 > The following sections are dedicated placeholders for final reviewer evaluation:
 
-### 🔗 Live Vercel Deployment
-* **Vercel Production URL:** `[INSERT_LIVE_VERCEL_URL_HERE]` *(e.g. https://passpos.vercel.app)*
+### 🔗 Live Deployment
+* **Production URL:** [https://passpos.netlify.app/](https://passpos.netlify.app/)
 
 ### 🎥 Demo Video Walkthrough
 * **Video Link:** `[INSERT_DEMO_VIDEO_YOUTUBE_OR_LOOM_URL_HERE]`
